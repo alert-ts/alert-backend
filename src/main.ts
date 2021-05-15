@@ -17,6 +17,7 @@ class App {
       .setTitle("Alert API")
       .setDescription("")
       .setVersion("1.0")
+      .addBearerAuth()
       .build();
 
     const swaggerDocument: OpenAPIObject = SwaggerModule.createDocument(
