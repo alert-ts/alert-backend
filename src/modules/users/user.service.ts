@@ -1,11 +1,8 @@
 import { Injectable } from "@nestjs/common";
-import { model } from "mongoose";
 import { x2 } from "sha256";
 
 import { IUser } from "./interfaces/IUser";
-import { UserSchema } from "./schemas/user.schema";
-
-const User: any = model("User", UserSchema);
+import { User } from "./schemas/user.schema";
 
 @Injectable()
 export class UserService {

@@ -1,7 +1,7 @@
-import { Schema } from "mongoose";
+import { Schema, model } from "mongoose";
 import { v4 as uuid } from "uuid";
 
-export const UserSchema = new Schema({
+const UserSchema = new Schema({
   uuid: { type: String, default: uuid() },
   createdAt: { type: Date, default: new Date().toLocaleString() },
   updatedAt: { type: Date, default: new Date().toLocaleString() },
@@ -18,3 +18,5 @@ export const UserSchema = new Schema({
     posts: Number,
   },
 });
+
+export const User: any = model("User", UserSchema);
