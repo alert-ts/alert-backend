@@ -1,3 +1,5 @@
+import "dotenv/config";
+
 import { NestFactory, NestApplication } from "@nestjs/core";
 import { SwaggerModule, DocumentBuilder, OpenAPIObject } from "@nestjs/swagger";
 
