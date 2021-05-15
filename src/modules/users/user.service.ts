@@ -10,7 +10,10 @@ const User: any = model("User", UserSchema);
 @Injectable()
 export class UserService {
   public async create(user: IUser): Promise<void> {
-    const userExists: boolean = !!(await this.findOne(user.username));
+    const users: Array<IUser> = await this.findAll();
+    const userExists: boolean = !!users.find(
+      (u: IUser) => u.username === user.username || u.email === user.email,
+    );
 
     if (!userExists) {
       user.password = x2(user.password + process.env.PASS_SALT!);
