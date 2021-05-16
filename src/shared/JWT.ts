@@ -10,13 +10,7 @@ export default class JWT {
     });
   }
 
-  public verify(token: string): boolean {
-    try {
-      jwt.verify(token, this.pk);
-
-      return true;
-    } catch (err) {
-      return false;
-    }
+  public verify(token: string): any {
+    return jwt.verify(token, this.pk);
   }
 }
