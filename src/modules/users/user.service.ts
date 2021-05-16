@@ -24,17 +24,15 @@ export class UserService {
   }
 
   public async findOne(username: string): Promise<IUser | undefined> {
-    const users: Array<IUser> = await User.find();
+    const user: IUser = await User.findOne({ username });
 
-    for (const user of users) {
-      if (user.username === username) {
-        user.password = undefined;
-        user.numbers.followers = user.followers.length;
-        user.numbers.following = user.following.length;
-        user.numbers.posts = user.posts.length;
+    if (user) {
+      user.password = undefined;
+      user.numbers.followers = user.followers.length;
+      user.numbers.following = user.following.length;
+      user.numbers.posts = user.posts.length;
 
-        return user;
-      }
+      return user;
     }
 
     return undefined;
