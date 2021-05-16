@@ -17,16 +17,22 @@ export class AuthMiddleware implements NestMiddleware {
         req.headers.authorization.split(" ").includes("Bearer")
       ) {
         const token: string = req.headers.authorization.split(" ")[1];
+        const decodedToken: any = new JWT().verify(token);
 
-        new JWT().verify(token);
+        if (req.method === "PUT" || req.method === "DELETE") {
+          if (req.params.username === decodedToken.data.username) {
+            return next();
+          }
+
+          throw new Error("Invalid user");
+        }
 
         return next();
       }
+
+      throw new Error("Invalid token");
     } catch (err) {
-      throw new HttpException(
-        "Invalid authorization token",
-        HttpStatus.UNAUTHORIZED,
-      );
+      throw new HttpException(err.message, HttpStatus.UNAUTHORIZED);
     }
   }
 }
