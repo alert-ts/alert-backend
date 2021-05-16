@@ -19,7 +19,18 @@ export class PostController {
     });
   }
 
-  @Get([":creatorUuid", ":uuid"])
+  @Get(":creatorUuid")
+  @ApiParam({
+    name: "creatorUuid",
+    required: true,
+  })
+  public async findMany(
+    @Param("creatorUuid") creatorUuid: string,
+  ): Promise<string> {
+    return JSON.stringify(await this.postService.findMany(creatorUuid));
+  }
+
+  @Get(":creatorUuid/:uuid")
   @ApiParam({
     name: "creatorUuid",
     required: true,
@@ -33,14 +44,5 @@ export class PostController {
     @Param("uuid") uuid: string,
   ): Promise<IPost> {
     return await this.postService.findOne(creatorUuid, uuid);
-  }
-
-  @Get(":creatorUuid")
-  @ApiParam({
-    name: "creatorUuid",
-    required: true,
-  })
-  public async findMany(@Param() creatorUuid: string): Promise<Array<IPost>> {
-    return await this.postService.findMany(creatorUuid);
   }
 }

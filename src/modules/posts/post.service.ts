@@ -14,6 +14,13 @@ export class PostService {
   }
 
   public async findMany(creatorUuid: string): Promise<Array<IPost>> {
-    return await Post.findMany({ creatorUuid });
+    const posts: Array<IPost> = await Post.find();
+    let postsTemp: Array<IPost> = [];
+
+    for (const post of posts) {
+      if (post.creatorUuid === creatorUuid) postsTemp.push(post);
+    }
+
+    return postsTemp;
   }
 }
