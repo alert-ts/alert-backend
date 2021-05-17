@@ -35,7 +35,7 @@ export class UserService {
       return user;
     }
 
-    return undefined;
+    throw new Error("User not found!");
   }
 
   public async findAll(): Promise<Array<IUser>> {

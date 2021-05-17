@@ -39,7 +39,11 @@ export class UserController {
   public async findOnd(
     @Param() { username }: { username: string },
   ): Promise<IUser> {
-    return await this.userService.findOne(username);
+    try {
+      return await this.userService.findOne(username);
+    } catch (err) {
+      throw new HttpException(err.message, HttpStatus.NOT_FOUND);
+    }
   }
 
   @Get()
