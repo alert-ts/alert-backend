@@ -7,10 +7,9 @@ import { User } from "./schemas/user.schema";
 @Injectable()
 export class UserService {
   public async create(user: IUser): Promise<void> {
-    const users: Array<IUser> = await this.findAll();
-    const userExists: boolean = !!users.find(
-      (u: IUser) => u.username === user.username || u.email === user.email,
-    );
+    const userExists: boolean = !!(await User.findOne({
+      $or: [{ username: user.username }, { email: user.email }],
+    }));
 
     if (!userExists) {
       user.password = x2(user.password + process.env.PASS_SALT!);
@@ -23,7 +22,7 @@ export class UserService {
     throw new Error("User already exists!");
   }
 
-  public async findOne(username: string): Promise<IUser | undefined> {
+  public async findOne(username: string): Promise<IUser> {
     const user: IUser = await User.findOne({ username });
 
     if (user) {
