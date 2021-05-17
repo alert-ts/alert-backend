@@ -19,13 +19,7 @@ export class AuthMiddleware implements NestMiddleware {
         const token: string = req.headers.authorization.split(" ")[1];
         const decodedToken: any = new JWT().verify(token);
 
-        if (req.method === "PUT" || req.method === "DELETE") {
-          if (req.params.username === decodedToken.data.username) {
-            return next();
-          }
-
-          throw new Error("Invalid user");
-        }
+        (req as any).currentUser = decodedToken.data;
 
         return next();
       }

@@ -16,6 +16,8 @@ export class AuthService {
 
     if (!user) throw new Error("Invalid Credentials");
 
-    return new JWT().sign({ username: user.username });
+    user.password = undefined;
+
+    return new JWT().sign(user);
   }
 }
