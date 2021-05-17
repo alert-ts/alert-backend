@@ -6,6 +6,7 @@ import {
   Delete,
   Body,
   Param,
+  Req,
   HttpException,
   HttpStatus,
 } from "@nestjs/common";
@@ -13,6 +14,7 @@ import { ApiParam, ApiBearerAuth } from "@nestjs/swagger";
 
 import { UserService } from "./user.service";
 import { CreateUserDto } from "./dtos/createUser.dto";
+import { IUser } from "./interfaces/IUser";
 
 @ApiBearerAuth()
 @Controller("users")
@@ -36,23 +38,22 @@ export class UserController {
   @ApiParam({ name: "username", required: true })
   public async findOnd(
     @Param() { username }: { username: string },
-  ): Promise<string> {
-    return JSON.stringify(await this.userService.findOne(username));
+  ): Promise<IUser> {
+    return await this.userService.findOne(username);
   }
 
   @Get()
-  public async findAll(): Promise<string> {
-    return JSON.stringify(await this.userService.findAll());
+  public async findAll(): Promise<Array<IUser>> {
+    return await this.userService.findAll();
   }
 
-  @Put(":username")
-  @ApiParam({ name: "username", required: true })
+  @Put()
   public async update(
-    @Param() { username }: { username: string },
+    @Req() { currentUser }: { currentUser: IUser },
     @Body() updateUser: CreateUserDto,
   ): Promise<string> {
     try {
-      await this.userService.update(username, updateUser);
+      await this.userService.update(currentUser.username, updateUser);
 
       return JSON.stringify({
         log: "User updated",
@@ -62,13 +63,12 @@ export class UserController {
     }
   }
 
-  @Delete(":username")
-  @ApiParam({ name: "username", required: true })
+  @Delete()
   public async remove(
-    @Param() { username }: { username: string },
+    @Req() { currentUser }: { currentUser: IUser },
   ): Promise<string> {
     try {
-      await this.userService.remove(username);
+      await this.userService.remove(currentUser.username);
 
       return JSON.stringify({
         log: "User removed",
