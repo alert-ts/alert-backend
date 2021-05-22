@@ -12,6 +12,8 @@ export class PostService {
 
     if (!postAlreadyExists) {
       await new Post(post).save();
+
+      return;
     }
 
     throw new Error("Post already exists!");
