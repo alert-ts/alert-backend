@@ -9,13 +9,12 @@ const UserSchema: Schema = new Schema({
   username: String,
   fullname: String,
   password: String,
-  posts: [String],
+  avatar: String,
   followers: [String],
   following: [String],
   numbers: {
     followers: Number,
     following: Number,
-    posts: Number,
   },
 });
 

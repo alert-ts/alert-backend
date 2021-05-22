@@ -26,4 +26,10 @@ export class CreateUserDto implements IUser {
     required: true,
   })
   password: string;
+
+  @ApiProperty({
+    type: String,
+    required: true,
+  })
+  avatar: string;
 }

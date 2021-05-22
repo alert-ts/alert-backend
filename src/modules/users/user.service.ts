@@ -29,7 +29,6 @@ export class UserService {
       user.password = undefined;
       user.numbers.followers = user.followers.length;
       user.numbers.following = user.following.length;
-      user.numbers.posts = user.posts.length;
 
       return user;
     }
@@ -44,26 +43,25 @@ export class UserService {
       user.password = undefined;
       user.followers = undefined;
       user.following = undefined;
-      user.posts = undefined;
     }
 
     return users;
   }
 
   public async update(username: string, data: IUser): Promise<void> {
-    const user: IUser = await this.findOne(username);
+    const user: typeof User = await this.findOne(username);
 
-    await (user as any).updateOne({
+    await user.updateOne({
       updatedAt: new Date().toLocaleString(),
-      email: data.email || user.email,
       username: data.username || user.username,
       fullname: data.fullname || user.fullname,
+      avatar: data.avatar || user.avatar,
     });
   }
 
   public async remove(username: string): Promise<void> {
-    const user: IUser = await this.findOne(username);
+    const user: typeof User = await this.findOne(username);
 
-    await (user as any).remove();
+    await user.remove();
   }
 }

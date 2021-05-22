@@ -6,11 +6,10 @@ export interface IUser {
   username: string;
   fullname: string;
   password?: string;
-  posts?: Array<string>;
+  avatar?: string;
   followers?: Array<string>;
   following?: Array<string>;
   numbers?: {
-    posts: number;
     following: number;
     followers: number;
   };
