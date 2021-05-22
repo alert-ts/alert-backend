@@ -17,6 +17,10 @@ export class AuthService {
     if (!user) throw new Error("Invalid Credentials");
 
     user.password = undefined;
+    user.avatar = undefined;
+    user.followers = undefined;
+    user.following = undefined;
+    user.numbers = undefined;
 
     return new JWT().sign(user);
   }
