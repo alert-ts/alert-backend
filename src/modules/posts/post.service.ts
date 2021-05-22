@@ -6,15 +6,27 @@ import { Post } from "./schemas/post.schema";
 @Injectable()
 export class PostService {
   public async create(post: IPost): Promise<void> {
-    await new Post(post).save();
+    const postAlreadyExists: boolean = !!(await Post.findOne({
+      content: post.content,
+    }));
+
+    if (!postAlreadyExists) {
+      await new Post(post).save();
+    }
+
+    throw new Error("Post already exists!");
   }
 
   public async findOne(creatorUuid: string, uuid: string): Promise<IPost> {
     const post: IPost = await Post.findOne({ creatorUuid, uuid });
 
-    post.numbers.likes = post.likes.length;
+    if (post) {
+      post.numbers.likes = post.likes.length;
 
-    return post;
+      return post;
+    }
+
+    throw new Error("Post not found!");
   }
 
   public async findMany(creatorUuid: string): Promise<Array<IPost>> {
@@ -32,7 +44,7 @@ export class PostService {
     uuid: string,
     data: IPost,
   ): Promise<void> {
-    const post: typeof Post = await Post.findOne({ creatorUuid, uuid });
+    const post: typeof Post = await this.findOne(creatorUuid, uuid);
 
     await post.updateOne({
       updatedAt: new Date().toLocaleString(),
@@ -41,7 +53,7 @@ export class PostService {
   }
 
   public async remove(creatorUuid: string, uuid: string): Promise<void> {
-    const post: typeof Post = await Post.findOne({ creatorUuid, uuid });
+    const post: typeof Post = await Post.findOne(creatorUuid, uuid);
 
     await post.remove();
   }

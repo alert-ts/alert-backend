@@ -49,7 +49,7 @@ export class UserService {
   }
 
   public async update(username: string, data: IUser): Promise<void> {
-    const user: typeof User = await User.findOne({ username });
+    const user: typeof User = await this.findOne(username);
 
     await user.updateOne({
       updatedAt: new Date().toLocaleString(),
@@ -60,7 +60,7 @@ export class UserService {
   }
 
   public async remove(username: string): Promise<void> {
-    const user: typeof User = await User.findOne({ username });
+    const user: typeof User = await this.findOne(username);
 
     await user.remove();
   }

@@ -27,13 +27,17 @@ export class PostController {
     @Req() { currentUser }: { currentUser: IUser },
     @Body() post: CreatePostDto,
   ): Promise<string> {
-    (post as IPost).creatorUuid = currentUser.uuid;
+    try {
+      (post as IPost).creatorUuid = currentUser.uuid;
 
-    await this.postService.create(post);
+      await this.postService.create(post);
 
-    return JSON.stringify({
-      log: "Post created",
-    });
+      return JSON.stringify({
+        log: "Post created",
+      });
+    } catch (err) {
+      throw new HttpException(err.message, HttpStatus.NOT_ACCEPTABLE);
+    }
   }
 
   @Get(":creatorUuid")
@@ -60,7 +64,11 @@ export class PostController {
     @Param("creatorUuid") creatorUuid: string,
     @Param("uuid") uuid: string,
   ): Promise<IPost> {
-    return await this.postService.findOne(creatorUuid, uuid);
+    try {
+      return await this.postService.findOne(creatorUuid, uuid);
+    } catch (err) {
+      throw new HttpException(err.message, HttpStatus.NOT_FOUND);
+    }
   }
 
   @Put(":uuid")
@@ -80,7 +88,7 @@ export class PostController {
         log: "Post updated",
       });
     } catch (err) {
-      throw new HttpException("Post not found!", HttpStatus.NOT_FOUND);
+      throw new HttpException(err.message, HttpStatus.NOT_FOUND);
     }
   }
 
@@ -100,7 +108,7 @@ export class PostController {
         log: "Post removed",
       });
     } catch (err) {
-      throw new HttpException("Post not found!", HttpStatus.NOT_FOUND);
+      throw new HttpException(err.message, HttpStatus.NOT_FOUND);
     }
   }
 }
