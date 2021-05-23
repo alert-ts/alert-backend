@@ -55,7 +55,7 @@ export class PostService {
   }
 
   public async remove(creatorUuid: string, uuid: string): Promise<void> {
-    const post: typeof Post = await Post.findOne(creatorUuid, uuid);
+    const post: typeof Post = await this.findOne(creatorUuid, uuid);
 
     await post.remove();
   }
