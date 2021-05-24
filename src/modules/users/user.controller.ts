@@ -36,9 +36,7 @@ export class UserController {
 
   @Get(":username")
   @ApiParam({ name: "username", required: true })
-  public async findOnd(
-    @Param() { username }: { username: string },
-  ): Promise<IUser> {
+  public async findOne(@Param("username") username: string): Promise<IUser> {
     try {
       return await this.userService.findOne(username);
     } catch (err) {
