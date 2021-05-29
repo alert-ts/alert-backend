@@ -6,11 +6,12 @@ import {
   Delete,
   Body,
   Param,
+  Query,
   Req,
   HttpException,
   HttpStatus,
 } from "@nestjs/common";
-import { ApiParam, ApiBearerAuth } from "@nestjs/swagger";
+import { ApiParam, ApiQuery, ApiBearerAuth } from "@nestjs/swagger";
 
 import { UserService } from "./user.service";
 import { CreateUserDto } from "./dtos/createUser.dto";
@@ -29,6 +30,16 @@ export class UserController {
       return JSON.stringify({
         log: "User created",
       });
+    } catch (err) {
+      throw new HttpException(err.message, HttpStatus.NOT_ACCEPTABLE);
+    }
+  }
+
+  @Get("search")
+  @ApiQuery({ name: "query" })
+  public async search(@Query("query") query: string): Promise<Array<IUser>> {
+    try {
+      return await this.userService.search(query);
     } catch (err) {
       throw new HttpException(err.message, HttpStatus.NOT_ACCEPTABLE);
     }

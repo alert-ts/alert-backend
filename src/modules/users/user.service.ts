@@ -48,6 +48,26 @@ export class UserService {
     return users;
   }
 
+  public async search(query: string): Promise<Array<IUser>> {
+    if (query.length < 3) {
+      throw new Error(
+        "Search query need to be greater than or equal to 3 characters",
+      );
+    }
+
+    const users: Array<IUser> = await User.find({
+      username: { $regex: `.*${query}.*` },
+    });
+
+    for (const user of users) {
+      user.password = undefined;
+      user.followers = undefined;
+      user.following = undefined;
+    }
+
+    return users;
+  }
+
   public async update(username: string, data: IUser): Promise<void> {
     const user: typeof User = await this.findOne(username);
 
