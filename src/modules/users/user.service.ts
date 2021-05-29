@@ -12,6 +12,12 @@ export class UserService {
     }));
 
     if (!userExists) {
+      if (user.username.length < 3) {
+        throw new Error(
+          "Username need to be greater than or equal to 3 characters",
+        );
+      }
+
       user.password = x2(user.password + process.env.PASS_SALT!);
 
       new User(user).save();
