@@ -62,7 +62,10 @@ export class UserService {
     }
 
     const users: Array<IUser> = await User.find({
-      username: { $regex: `.*${query}.*` },
+      $or: [
+        { username: { $regex: `.*${query}.*` } },
+        { fullname: { $regex: `.*${query}.*` } },
+      ],
     });
 
     for (const user of users) {
