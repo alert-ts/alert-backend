@@ -18,6 +18,7 @@ export class AuthService {
 
     user.password = undefined;
     user.avatar = undefined;
+    user.posts = undefined;
     user.followers = undefined;
     user.following = undefined;
     user.numbers = undefined;
