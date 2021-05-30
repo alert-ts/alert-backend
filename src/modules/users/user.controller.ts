@@ -35,6 +35,15 @@ export class UserController {
     }
   }
 
+  @Get("getMe")
+  public async getMe(
+    @Req() { currentUser }: { currentUser: IUser },
+  ): Promise<IUser> {
+    console.log(currentUser)
+
+    return this.userService.getMe(currentUser.uuid);
+  }
+
   @Get("search")
   @ApiQuery({ name: "query" })
   public async search(@Query("query") query: string): Promise<Array<IUser>> {

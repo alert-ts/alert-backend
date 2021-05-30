@@ -28,8 +28,14 @@ export class UserService {
     throw new Error("User already exists!");
   }
 
+  public async getMe(uuid: string): Promise<IUser> {
+    return await this.findOne(uuid);
+  }
+
   public async findOne(username: string): Promise<IUser> {
-    const user: IUser = await User.findOne({ username });
+    const user: IUser = await User.findOne({
+      $or: [{ username: username }, { uuid: username }],
+    });
 
     if (user) {
       user.password = undefined;
@@ -75,8 +81,12 @@ export class UserService {
 
     for (const user of users) {
       user.password = undefined;
+      user.numbers.followers = user.followers.length;
+      user.numbers.following = user.following.length;
+      user.numbers.posts = user.posts.length;
       user.followers = undefined;
       user.following = undefined;
+      user.posts = undefined;
     }
 
     return users;
