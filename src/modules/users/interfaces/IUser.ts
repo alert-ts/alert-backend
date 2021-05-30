@@ -7,9 +7,11 @@ export interface IUser {
   fullname: string;
   password?: string;
   avatar?: string;
+  posts?: Array<string>;
   followers?: Array<string>;
   following?: Array<string>;
   numbers?: {
+    posts: number;
     following: number;
     followers: number;
   };

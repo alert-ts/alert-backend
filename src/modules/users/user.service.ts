@@ -20,7 +20,7 @@ export class UserService {
 
       user.password = x2(user.password + process.env.PASS_SALT!);
 
-      new User(user).save();
+      await new User(user).save();
 
       return;
     }
