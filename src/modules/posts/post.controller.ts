@@ -40,20 +40,20 @@ export class PostController {
     }
   }
 
-  @Get(":creatorUuid")
+  @Get(":username")
   @ApiParam({
-    name: "creatorUuid",
+    name: "username",
     required: true,
   })
   public async findMany(
-    @Param("creatorUuid") creatorUuid: string,
+    @Param("username") username: string,
   ): Promise<Array<IPost>> {
-    return await this.postService.findMany(creatorUuid);
+    return await this.postService.findMany(username);
   }
 
-  @Get(":creatorUuid/:uuid")
+  @Get(":username/:uuid")
   @ApiParam({
-    name: "creatorUuid",
+    name: "username",
     required: true,
   })
   @ApiParam({
@@ -61,11 +61,11 @@ export class PostController {
     required: true,
   })
   public async findOne(
-    @Param("creatorUuid") creatorUuid: string,
+    @Param("username") username: string,
     @Param("uuid") uuid: string,
   ): Promise<IPost> {
     try {
-      return await this.postService.findOne(creatorUuid, uuid);
+      return await this.postService.findOne(username, uuid);
     } catch (err) {
       throw new HttpException(err.message, HttpStatus.NOT_FOUND);
     }

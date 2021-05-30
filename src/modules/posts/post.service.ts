@@ -2,6 +2,7 @@ import { Injectable } from "@nestjs/common";
 
 import { IPost } from "./interfaces/IPost";
 import { Post } from "./schemas/post.schema";
+import { User } from "../users/schemas/user.schema";
 
 @Injectable()
 export class PostService {
@@ -11,7 +12,15 @@ export class PostService {
     }));
 
     if (!postAlreadyExists) {
-      await new Post(post).save();
+      const currentUser: typeof User = await User.findOne({
+        uuid: post.creatorUuid,
+      });
+      const newPost: typeof Post = new Post(post);
+
+      await currentUser.updateOne({
+        $push: { posts: newPost.uuid },
+      });
+      await newPost.save();
 
       return;
     }
@@ -19,8 +28,11 @@ export class PostService {
     throw new Error("Post already exists!");
   }
 
-  public async findOne(creatorUuid: string, uuid: string): Promise<IPost> {
-    const post: IPost = await Post.findOne({ creatorUuid, uuid });
+  public async findOne(username: string, uuid: string): Promise<IPost> {
+    const posts: Array<IPost> = await this.findMany(username);
+    const post: IPost = posts.find(
+      (post: IPost): boolean => post.uuid === uuid,
+    );
 
     if (post) {
       post.numbers.likes = post.likes.length;
@@ -31,14 +43,18 @@ export class PostService {
     throw new Error("Post not found!");
   }
 
-  public async findMany(creatorUuid: string): Promise<Array<IPost>> {
-    const posts: Array<IPost> = await Post.find({ creatorUuid });
+  public async findMany(username: string): Promise<Array<IPost>> {
+    const { posts }: { posts: Array<string> } = await User.findOne({
+      username,
+    });
+    const posts_: Array<IPost> = await Post.find({ uuid: { $in: posts } });
 
-    for (const post of posts) {
+    for (const post of posts_) {
       post.numbers.likes = post.likes.length;
+      post.likes = undefined;
     }
 
-    return posts;
+    return posts_;
   }
 
   public async update(

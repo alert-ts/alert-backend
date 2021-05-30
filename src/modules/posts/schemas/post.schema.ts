@@ -2,9 +2,9 @@ import { Schema, model } from "mongoose";
 import { v4 as uuid } from "uuid";
 
 const PostSchema: Schema = new Schema({
-  uuid: { type: String, default: uuid() },
-  createdAt: { type: Date, default: new Date().toLocaleString() },
-  updatedAt: { type: Date, default: new Date().toLocaleString() },
+  uuid: { type: String, default: uuid },
+  createdAt: { type: Date, default: Date.now },
+  updatedAt: { type: Date, default: Date.now },
   creatorUuid: String,
   content: String,
   likes: [String],
