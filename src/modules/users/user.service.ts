@@ -82,8 +82,8 @@ export class UserService {
     return users;
   }
 
-  public async update(username: string, data: IUser): Promise<void> {
-    const user: typeof User = await this.findOne(username);
+  public async update(uuid: string, data: IUser): Promise<void> {
+    const user: typeof User = await User.findOne({ uuid });
 
     await user.updateOne({
       updatedAt: new Date().toLocaleString(),
@@ -93,8 +93,8 @@ export class UserService {
     });
   }
 
-  public async remove(username: string): Promise<void> {
-    const user: typeof User = await this.findOne(username);
+  public async remove(uuid: string): Promise<void> {
+    const user: typeof User = await User.findOne({ uuid });
 
     await user.remove();
   }

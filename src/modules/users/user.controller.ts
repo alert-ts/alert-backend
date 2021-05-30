@@ -66,7 +66,7 @@ export class UserController {
     @Body() updateUser: CreateUserDto,
   ): Promise<string> {
     try {
-      await this.userService.update(currentUser.username, updateUser);
+      await this.userService.update(currentUser.uuid, updateUser);
 
       return JSON.stringify({
         log: "User updated",
@@ -81,7 +81,7 @@ export class UserController {
     @Req() { currentUser }: { currentUser: IUser },
   ): Promise<string> {
     try {
-      await this.userService.remove(currentUser.username);
+      await this.userService.remove(currentUser.uuid);
 
       return JSON.stringify({
         log: "User removed",
