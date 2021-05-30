@@ -4,6 +4,8 @@ import { x2 } from "sha256";
 import { IUser } from "./interfaces/IUser";
 import { User } from "./schemas/user.schema";
 
+import Filters from "./utils/Filters";
+
 @Injectable()
 export class UserService {
   public async create(user: IUser): Promise<void> {
@@ -37,14 +39,7 @@ export class UserService {
       $or: [{ username: username }, { uuid: username }],
     });
 
-    if (user) {
-      user.password = undefined;
-      user.numbers.followers = user.followers.length;
-      user.numbers.following = user.following.length;
-      user.numbers.posts = user.posts.length;
-
-      return user;
-    }
+    if (user) return Filters.filterInfoForOne(user);
 
     throw new Error("User not found!");
   }
@@ -52,17 +47,7 @@ export class UserService {
   public async findAll(): Promise<Array<IUser>> {
     const users: Array<IUser> = await User.find();
 
-    for (const user of users) {
-      user.password = undefined;
-      user.numbers.followers = user.followers.length;
-      user.numbers.following = user.following.length;
-      user.numbers.posts = user.posts.length;
-      user.followers = undefined;
-      user.following = undefined;
-      user.posts = undefined;
-    }
-
-    return users;
+    return users.map((user: IUser): IUser => Filters.filterInfoForMany(user));
   }
 
   public async search(query: string): Promise<Array<IUser>> {
@@ -79,17 +64,7 @@ export class UserService {
       ],
     });
 
-    for (const user of users) {
-      user.password = undefined;
-      user.numbers.followers = user.followers.length;
-      user.numbers.following = user.following.length;
-      user.numbers.posts = user.posts.length;
-      user.followers = undefined;
-      user.following = undefined;
-      user.posts = undefined;
-    }
-
-    return users;
+    return users.map((user: IUser): IUser => Filters.filterInfoForMany(user));
   }
 
   public async update(uuid: string, data: IUser): Promise<void> {

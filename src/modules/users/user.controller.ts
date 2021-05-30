@@ -39,8 +39,6 @@ export class UserController {
   public async getMe(
     @Req() { currentUser }: { currentUser: IUser },
   ): Promise<IUser> {
-    console.log(currentUser)
-
     return this.userService.getMe(currentUser.uuid);
   }
 
