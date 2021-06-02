@@ -28,16 +28,20 @@ export class PostService {
     throw new Error("Post already exists!");
   }
 
-  public async findOne(username: string, uuid: string): Promise<IPost> {
-    const { posts }: { posts: Array<string> } = await User.findOne({
-      username,
-    });
+  public async findOne(username: string, postUuid: string): Promise<IPost> {
+    const { posts, uuid }: { posts: Array<string>; uuid: string } =
+      await User.findOne({
+        $or: [{ username }, { uuid: username }],
+      });
 
-    if (posts.includes(uuid)) {
-      const post: IPost = await Post.findOne({ uuid });
+    if (posts.includes(postUuid)) {
+      const post: IPost = await Post.findOne({ uuid: postUuid });
 
       if (post) {
+        post.alreadyLiked = post.likes.includes(uuid);
         post.numbers.likes = post.likes.length;
+
+        console.log(post);
 
         return post;
       }
@@ -47,12 +51,14 @@ export class PostService {
   }
 
   public async findMany(username: string): Promise<Array<IPost>> {
-    const { posts }: { posts: Array<string> } = await User.findOne({
-      username,
-    });
+    const { posts, uuid }: { posts: Array<string>; uuid: string } =
+      await User.findOne({
+        $or: [{ username }, { uuid: username }],
+      });
     const posts_: Array<IPost> = await Post.find({ uuid: { $in: posts } });
 
     for (const post of posts_) {
+      post.alreadyLiked = post.likes.includes(uuid);
       post.numbers.likes = post.likes.length;
       post.likes = undefined;
     }

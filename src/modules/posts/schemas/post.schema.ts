@@ -7,6 +7,7 @@ const PostSchema: Schema = new Schema({
   updatedAt: { type: Date, default: Date.now },
   creatorUuid: String,
   content: String,
+  alreadyLiked: Boolean,
   likes: [String],
   numbers: {
     likes: Number,
