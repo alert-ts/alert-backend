@@ -41,8 +41,6 @@ export class PostService {
         post.alreadyLiked = post.likes.includes(uuid);
         post.numbers.likes = post.likes.length;
 
-        console.log(post);
-
         return post;
       }
     }
