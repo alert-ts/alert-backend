@@ -111,4 +111,29 @@ export class PostController {
       throw new HttpException(err.message, HttpStatus.NOT_FOUND);
     }
   }
+
+  @Post("like/:username/:uuid")
+  @ApiParam({
+    name: "username",
+    required: true,
+  })
+  @ApiParam({
+    name: "uuid",
+    required: true,
+  })
+  public async like(
+    @Req() { currentUser }: { currentUser: IUser },
+    @Param("username") username: string,
+    @Param("uuid") uuid: string,
+  ): Promise<string> {
+    try {
+      await this.postService.like(currentUser.uuid, username, uuid);
+
+      return JSON.stringify({
+        log: "Post liked",
+      });
+    } catch (err) {
+      throw new HttpException(err.message, HttpStatus.NOT_FOUND);
+    }
+  }
 }

@@ -29,15 +29,18 @@ export class PostService {
   }
 
   public async findOne(username: string, uuid: string): Promise<IPost> {
-    const posts: Array<IPost> = await this.findMany(username);
-    const post: IPost = posts.find(
-      (post: IPost): boolean => post.uuid === uuid,
-    );
+    const { posts }: { posts: Array<string> } = await User.findOne({
+      username,
+    });
 
-    if (post) {
-      post.numbers.likes = post.likes.length;
+    if (posts.includes(uuid)) {
+      const post: IPost = await Post.findOne({ uuid });
 
-      return post;
+      if (post) {
+        post.numbers.likes = post.likes.length;
+
+        return post;
+      }
     }
 
     throw new Error("Post not found!");
@@ -58,11 +61,11 @@ export class PostService {
   }
 
   public async update(
-    creatorUuid: string,
+    currentUser: string,
     uuid: string,
     data: IPost,
   ): Promise<void> {
-    const post: typeof Post = await this.findOne(creatorUuid, uuid);
+    const post: typeof Post = await this.findOne(currentUser, uuid);
 
     await post.updateOne({
       updatedAt: new Date().toLocaleString(),
@@ -70,9 +73,27 @@ export class PostService {
     });
   }
 
-  public async remove(creatorUuid: string, uuid: string): Promise<void> {
-    const post: typeof Post = await this.findOne(creatorUuid, uuid);
+  public async remove(currentUser: string, uuid: string): Promise<void> {
+    const post: typeof Post = await this.findOne(currentUser, uuid);
 
     await post.remove();
+  }
+
+  public async like(
+    currentUser: string,
+    username: string,
+    uuid: string,
+  ): Promise<void> {
+    const post: typeof Post = await this.findOne(username, uuid);
+
+    if (!post.likes.includes(currentUser)) {
+      await post.update({
+        $push: { likes: currentUser },
+      });
+    } else {
+      await post.update({
+        $pull: { likes: currentUser },
+      });
+    }
   }
 }
