@@ -7,6 +7,7 @@ import {
   Delete,
   Param,
   Req,
+  HttpCode,
   HttpException,
   HttpStatus,
 } from "@nestjs/common";
@@ -113,6 +114,7 @@ export class PostController {
   }
 
   @Post("like/:username/:uuid")
+  @HttpCode(202)
   @ApiParam({
     name: "username",
     required: true,

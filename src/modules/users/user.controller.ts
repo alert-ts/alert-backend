@@ -8,6 +8,7 @@ import {
   Param,
   Query,
   Req,
+  HttpCode,
   HttpException,
   HttpStatus,
 } from "@nestjs/common";
@@ -107,6 +108,7 @@ export class UserController {
   }
 
   @Post("follow/:username")
+  @HttpCode(202)
   @ApiParam({ name: "username", required: true })
   public async follow(
     @Req() { currentUser }: { currentUser: IUser },
