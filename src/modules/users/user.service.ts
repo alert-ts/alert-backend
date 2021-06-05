@@ -67,8 +67,16 @@ export class UserService {
     return users.map((user: IUser): IUser => Filters.filterInfoForMany(user));
   }
 
-  public async update(uuid: string, data: IUser): Promise<void> {
-    const user: typeof User = await User.findOne({ uuid });
+  public async update(currentUser: string, data: IUser): Promise<void> {
+    const user: typeof User = await this.findOne(currentUser);
+
+    if (data.username) {
+      const isInvalidUsername: boolean = !!(await this.findOne(data.username));
+
+      if (isInvalidUsername) {
+        throw new Error("Invalid username!");
+      }
+    }
 
     await user.updateOne({
       updatedAt: new Date().toLocaleString(),
@@ -78,9 +86,36 @@ export class UserService {
     });
   }
 
-  public async remove(uuid: string): Promise<void> {
-    const user: typeof User = await User.findOne({ uuid });
+  public async remove(currentUser: string): Promise<void> {
+    const user: typeof User = await this.findOne(currentUser);
 
     await user.remove();
+  }
+
+  public async follow(currentUser_: string, uuid: string): Promise<void> {
+    if (currentUser_ !== uuid) {
+      const currentUser: typeof User = await this.findOne(currentUser_);
+      const targetUser: typeof User = await this.findOne(uuid);
+
+      if (!currentUser.following.includes(uuid)) {
+        await currentUser.updateOne({
+          $push: { following: uuid },
+        });
+
+        await targetUser.updateOne({
+          $push: { followers: currentUser_ },
+        });
+      } else {
+        await currentUser.updateOne({
+          $pull: { following: uuid },
+        });
+
+        await targetUser.updateOne({
+          $pull: { followers: currentUser_ },
+        });
+      }
+    }
+
+    throw new Error("You can't follow yourself!");
   }
 }

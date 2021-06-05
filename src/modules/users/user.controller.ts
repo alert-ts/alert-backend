@@ -79,7 +79,7 @@ export class UserController {
         log: "User updated",
       });
     } catch (err) {
-      throw new HttpException(err.message, HttpStatus.NOT_FOUND);
+      throw new HttpException(err.message, HttpStatus.NOT_ACCEPTABLE);
     }
   }
 
@@ -92,6 +92,23 @@ export class UserController {
 
       return JSON.stringify({
         log: "User removed",
+      });
+    } catch (err) {
+      throw new HttpException(err.message, HttpStatus.NOT_ACCEPTABLE);
+    }
+  }
+
+  @Post("follow/:uuid")
+  @ApiParam({ name: "uuid", required: true })
+  public async follow(
+    @Req() { currentUser }: { currentUser: IUser },
+    @Param("uuid") uuid: string,
+  ): Promise<string> {
+    try {
+      await this.userService.follow(currentUser.uuid, uuid);
+
+      return JSON.stringify({
+        log: "User followed",
       });
     } catch (err) {
       throw new HttpException(err.message, HttpStatus.NOT_FOUND);
