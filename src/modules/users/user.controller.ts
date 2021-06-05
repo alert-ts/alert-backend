@@ -44,9 +44,12 @@ export class UserController {
 
   @Get("search")
   @ApiQuery({ name: "query" })
-  public async search(@Query("query") query: string): Promise<Array<IUser>> {
+  public async search(
+    @Req() { currentUser }: { currentUser: IUser },
+    @Query("query") query: string,
+  ): Promise<Array<IUser>> {
     try {
-      return await this.userService.search(query);
+      return await this.userService.search(currentUser.uuid, query);
     } catch (err) {
       throw new HttpException(err.message, HttpStatus.NOT_ACCEPTABLE);
     }
@@ -54,17 +57,22 @@ export class UserController {
 
   @Get(":username")
   @ApiParam({ name: "username", required: true })
-  public async findOne(@Param("username") username: string): Promise<IUser> {
+  public async findOne(
+    @Req() { currentUser }: { currentUser: IUser },
+    @Param("username") username: string,
+  ): Promise<IUser> {
     try {
-      return await this.userService.findOne(username);
+      return await this.userService.findOne(currentUser.uuid, username);
     } catch (err) {
       throw new HttpException(err.message, HttpStatus.NOT_FOUND);
     }
   }
 
   @Get()
-  public async findAll(): Promise<Array<IUser>> {
-    return await this.userService.findAll();
+  public async findAll(
+    @Req() { currentUser }: { currentUser: IUser },
+  ): Promise<Array<IUser>> {
+    return await this.userService.findAll(currentUser.uuid);
   }
 
   @Put()
@@ -98,14 +106,14 @@ export class UserController {
     }
   }
 
-  @Post("follow/:uuid")
-  @ApiParam({ name: "uuid", required: true })
+  @Post("follow/:username")
+  @ApiParam({ name: "username", required: true })
   public async follow(
     @Req() { currentUser }: { currentUser: IUser },
-    @Param("uuid") uuid: string,
+    @Param("username") username: string,
   ): Promise<string> {
     try {
-      await this.userService.follow(currentUser.uuid, uuid);
+      await this.userService.follow(currentUser.uuid, username);
 
       return JSON.stringify({
         log: "User followed",

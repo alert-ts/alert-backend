@@ -8,6 +8,7 @@ export interface IUser {
   password?: string;
   avatar?: string;
   posts?: Array<string>;
+  alreadyFollowed?: boolean;
   followers?: Array<string>;
   following?: Array<string>;
   numbers?: {

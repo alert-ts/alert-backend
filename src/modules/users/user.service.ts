@@ -31,31 +31,52 @@ export class UserService {
   }
 
   public async getMe(uuid: string): Promise<IUser> {
-    return await this.findOne(uuid);
+    return Filters.filterInfoForOne(await User.findOne({ uuid }));
   }
 
-  public async findOne(username: string): Promise<IUser> {
+  public async findOne(currentUser: string, username: string): Promise<IUser> {
+    const { following }: { following: Array<string> } = await User.findOne({
+      uuid: currentUser,
+    });
     const user: IUser = await User.findOne({
       $or: [{ username: username }, { uuid: username }],
     });
 
-    if (user) return Filters.filterInfoForOne(user);
+    if (user) {
+      user.alreadyFollowed = following.includes(user.uuid);
+
+      return Filters.filterInfoForOne(user);
+    }
 
     throw new Error("User not found!");
   }
 
-  public async findAll(): Promise<Array<IUser>> {
+  public async findAll(currentUser: string): Promise<Array<IUser>> {
+    const { following }: { following: Array<string> } = await User.findOne({
+      uuid: currentUser,
+    });
     const users: Array<IUser> = await User.find();
 
-    return users.map((user: IUser): IUser => Filters.filterInfoForMany(user));
+    return users.map((user: IUser): IUser => {
+      user.alreadyFollowed = following.includes(user.uuid);
+
+      return Filters.filterInfoForMany(user);
+    });
   }
 
-  public async search(query: string): Promise<Array<IUser>> {
+  public async search(
+    currentUser: string,
+    query: string,
+  ): Promise<Array<IUser>> {
     if (query.length < 3) {
       throw new Error(
         "Search query need to be greater than or equal to 3 characters",
       );
     }
+
+    const { following }: { following: Array<string> } = await User.findOne({
+      uuid: currentUser,
+    });
 
     const users: Array<IUser> = await User.find({
       $or: [
@@ -64,14 +85,20 @@ export class UserService {
       ],
     });
 
-    return users.map((user: IUser): IUser => Filters.filterInfoForMany(user));
+    return users.map((user: IUser): IUser => {
+      user.alreadyFollowed = following.includes(user.uuid);
+
+      return Filters.filterInfoForMany(user);
+    });
   }
 
   public async update(currentUser: string, data: IUser): Promise<void> {
-    const user: typeof User = await this.findOne(currentUser);
+    const user: typeof User = await User.findOne({ uuid: currentUser });
 
     if (data.username) {
-      const isInvalidUsername: boolean = !!(await this.findOne(data.username));
+      const isInvalidUsername: boolean = !!(await User.findOne({
+        username: data.username,
+      }));
 
       if (isInvalidUsername) {
         throw new Error("Invalid username!");
@@ -87,19 +114,23 @@ export class UserService {
   }
 
   public async remove(currentUser: string): Promise<void> {
-    const user: typeof User = await this.findOne(currentUser);
+    const user: typeof User = await User.findOne({ uuid: currentUser });
 
     await user.remove();
   }
 
-  public async follow(currentUser_: string, uuid: string): Promise<void> {
-    if (currentUser_ !== uuid) {
-      const currentUser: typeof User = await this.findOne(currentUser_);
-      const targetUser: typeof User = await this.findOne(uuid);
+  public async follow(currentUser_: string, username: string): Promise<void> {
+    const currentUser: typeof User = await User.findOne({
+      uuid: currentUser_,
+    });
+    const targetUser: typeof User = await User.findOne({
+      $or: [{ username: username }, { uuid: username }],
+    });
 
-      if (!currentUser.following.includes(uuid)) {
+    if (currentUser.uuid !== targetUser.uuid) {
+      if (!currentUser.following.includes(targetUser.uuid)) {
         await currentUser.updateOne({
-          $push: { following: uuid },
+          $push: { following: targetUser.uuid },
         });
 
         await targetUser.updateOne({
@@ -107,13 +138,15 @@ export class UserService {
         });
       } else {
         await currentUser.updateOne({
-          $pull: { following: uuid },
+          $pull: { following: targetUser.uuid },
         });
 
         await targetUser.updateOne({
           $pull: { followers: currentUser_ },
         });
       }
+
+      return;
     }
 
     throw new Error("You can't follow yourself!");
