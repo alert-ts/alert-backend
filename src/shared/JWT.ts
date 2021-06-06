@@ -1,16 +1,14 @@
 import * as jwt from "jsonwebtoken";
 
 export default class JWT {
-  private readonly pk: string = process.env.JWT_PK!.trim();
-
-  public sign(payload: unknown, exp: string = "7h"): string {
-    return jwt.sign({ data: payload }, this.pk, {
+  public static sign(payload: unknown, exp: string = "7h"): string {
+    return jwt.sign({ data: payload }, process.env.JWT_PK.trim()!, {
       algorithm: "HS256",
       expiresIn: exp,
     });
   }
 
-  public verify(token: string): any {
-    return jwt.verify(token, this.pk);
+  public static verify(token: string): any {
+    return jwt.verify(token, process.env.JWT_PK.trim()!);
   }
 }

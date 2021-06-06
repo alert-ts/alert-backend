@@ -16,6 +16,6 @@ export class AuthService {
 
     if (!uuid) throw new Error("Invalid Credentials");
 
-    return new JWT().sign({ uuid });
+    return JWT.sign({ uuid });
   }
 }
