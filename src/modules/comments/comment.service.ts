@@ -6,19 +6,21 @@ import { IComment } from "./interfaces/IComment";
 
 @Injectable()
 export class CommentService {
-  public async create(
-    creatorUuid: string,
-    postUuid: string,
-    content: string,
-  ): Promise<void> {
-    const postExists: boolean = !!(await Post.findOne({ uuid: postUuid }));
+  public async create(comment: IComment): Promise<void> {
+    const postExists: boolean = !!(await Post.findOne({
+      uuid: comment.postUuid,
+    }));
 
     if (postExists) {
-      await new Comment({ creatorUuid, postUuid, content }).save();
+      await new Comment(comment).save();
 
       return;
     }
 
     throw new Error("Post doesn't exists");
+  }
+
+  public async findAll(postUuid: string): Promise<Array<IComment>> {
+    return await Comment.find({ postUuid });
   }
 }
