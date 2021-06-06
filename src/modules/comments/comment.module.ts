@@ -1,7 +1,16 @@
-import { Module } from "@nestjs/common";
+import { Module, NestModule, MiddlewareConsumer } from "@nestjs/common";
+
+import { CommentController } from "./comment.controller";
+import { CommentService } from "./comment.service";
+
+import { AuthMiddleware } from "../../common/middlewares/auth.middleware";
 
 @Module({
-  controllers: [],
-  providers: [],
+  controllers: [CommentController],
+  providers: [CommentService],
 })
-export class CommentModule {}
+export class CommentModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(AuthMiddleware).forRoutes(CommentController);
+  }
+}
