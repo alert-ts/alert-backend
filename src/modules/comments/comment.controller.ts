@@ -10,13 +10,14 @@ import {
   HttpException,
   HttpStatus,
 } from "@nestjs/common";
-import { ApiBearerAuth, ApiParam } from "@nestjs/swagger";
+import { ApiTags, ApiBearerAuth, ApiParam } from "@nestjs/swagger";
 
 import { CommentService } from "./comment.service";
 import { CreateCommentDto } from "./dtos/createComment.dto";
 import { IComment } from "./interfaces/IComment";
 import { IUser } from "../users/interfaces/IUser";
 
+@ApiTags("Comments")
 @ApiBearerAuth()
 @Controller("comments")
 export class CommentController {

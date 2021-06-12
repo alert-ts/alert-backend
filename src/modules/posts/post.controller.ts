@@ -11,13 +11,14 @@ import {
   HttpException,
   HttpStatus,
 } from "@nestjs/common";
-import { ApiBearerAuth, ApiParam } from "@nestjs/swagger";
+import { ApiTags, ApiBearerAuth, ApiParam } from "@nestjs/swagger";
 
 import { PostService } from "./post.service";
 import { CreatePostDto } from "./dtos/createPost.dto";
 import { IPost } from "./interfaces/IPost";
 import { IUser } from "../users/interfaces/IUser";
 
+@ApiTags("Posts")
 @ApiBearerAuth()
 @Controller("posts")
 export class PostController {

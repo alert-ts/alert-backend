@@ -12,12 +12,13 @@ import {
   HttpException,
   HttpStatus,
 } from "@nestjs/common";
-import { ApiParam, ApiQuery, ApiBearerAuth } from "@nestjs/swagger";
+import { ApiTags, ApiParam, ApiQuery, ApiBearerAuth } from "@nestjs/swagger";
 
 import { UserService } from "./user.service";
 import { CreateUserDto } from "./dtos/createUser.dto";
 import { IUser } from "./interfaces/IUser";
 
+@ApiTags("Users")
 @ApiBearerAuth()
 @Controller("users")
 export class UserController {
