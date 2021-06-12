@@ -55,4 +55,24 @@ export class CommentService {
 
     throw new Error("Comment doesn't exists!");
   }
+
+  public async remove(
+    currentUser: string,
+    postUuid: string,
+    uuid: string,
+  ): Promise<void> {
+    const comment: typeof Comment = await Comment.findOne({
+      creatorUuid: currentUser,
+      postUuid,
+      uuid,
+    });
+
+    if (comment) {
+      await comment.remove();
+
+      return;
+    }
+
+    throw new Error("Comment doesn't exists!");
+  }
 }

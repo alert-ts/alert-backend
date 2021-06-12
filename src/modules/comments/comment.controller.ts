@@ -3,6 +3,7 @@ import {
   Post,
   Get,
   Put,
+  Delete,
   Param,
   Req,
   Body,
@@ -101,6 +102,31 @@ export class CommentController {
 
       return JSON.stringify({
         log: "Post updated!",
+      });
+    } catch (err) {
+      throw new HttpException(err.message, HttpStatus.NOT_FOUND);
+    }
+  }
+
+  @Delete(":postUuid/:uuid")
+  @ApiParam({
+    name: "postUuid",
+    required: true,
+  })
+  @ApiParam({
+    name: "uuid",
+    required: true,
+  })
+  public async remove(
+    @Req() { currentUser }: { currentUser: IUser },
+    @Param("postUuid") postUuid: string,
+    @Param("uuid") uuid: string,
+  ): Promise<string> {
+    try {
+      await this.commentService.remove(currentUser.uuid, postUuid, uuid);
+
+      return JSON.stringify({
+        log: "Post removed!",
       });
     } catch (err) {
       throw new HttpException(err.message, HttpStatus.NOT_FOUND);
