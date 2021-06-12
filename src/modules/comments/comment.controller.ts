@@ -2,6 +2,7 @@ import {
   Controller,
   Post,
   Get,
+  Put,
   Param,
   Req,
   Body,
@@ -57,7 +58,11 @@ export class CommentController {
     @Param("postUuid") postUuid: string,
     @Param("uuid") uuid: string,
   ): Promise<IComment> {
-    return await this.commentService.findOne(postUuid, uuid);
+    try {
+      return await this.commentService.findOne(postUuid, uuid);
+    } catch (err) {
+      throw new HttpException(err.message, HttpStatus.NOT_FOUND);
+    }
   }
 
   @Get(":postUuid")
@@ -69,5 +74,36 @@ export class CommentController {
     @Param("postUuid") postUuid: string,
   ): Promise<Array<IComment>> {
     return await this.commentService.findAll(postUuid);
+  }
+
+  @Put(":postUuid/:uuid")
+  @ApiParam({
+    name: "postUuid",
+    required: true,
+  })
+  @ApiParam({
+    name: "uuid",
+    required: true,
+  })
+  public async update(
+    @Req() { currentUser }: { currentUser: IUser },
+    @Param("postUuid") postUuid: string,
+    @Param("uuid") uuid: string,
+    @Body() comment: CreateCommentDto,
+  ): Promise<string> {
+    try {
+      await this.commentService.update(
+        currentUser.uuid,
+        postUuid,
+        uuid,
+        comment,
+      );
+
+      return JSON.stringify({
+        log: "Post updated!",
+      });
+    } catch (err) {
+      throw new HttpException(err.message, HttpStatus.NOT_FOUND);
+    }
   }
 }

@@ -17,14 +17,42 @@ export class CommentService {
       return;
     }
 
-    throw new Error("Post doesn't exists");
+    throw new Error("Post doesn't exists!");
   }
 
   public async findOne(postUuid: string, uuid: string): Promise<IComment> {
-    return await Comment.findOne({ postUuid, uuid });
+    const comment: IComment = await Comment.findOne({ postUuid, uuid });
+
+    if (comment) return comment;
+
+    throw new Error("Comment doesn't exists!");
   }
 
   public async findAll(postUuid: string): Promise<Array<IComment>> {
     return await Comment.find({ postUuid });
+  }
+
+  public async update(
+    currentUser: string,
+    postUuid: string,
+    uuid: string,
+    data: IComment,
+  ): Promise<void> {
+    const comment: typeof Comment = await Comment.findOne({
+      creatorUuid: currentUser,
+      postUuid,
+      uuid,
+    });
+
+    if (comment) {
+      await comment.updateOne({
+        updatedAt: new Date().toLocaleString(),
+        content: data.content || comment.content,
+      });
+
+      return;
+    }
+
+    throw new Error("Comment doesn't exists!");
   }
 }
