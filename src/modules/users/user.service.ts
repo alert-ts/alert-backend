@@ -44,6 +44,7 @@ export class UserService {
 
     if (user) {
       user.alreadyFollowed = following.includes(user.uuid);
+      user.followEachOther = user.alreadyFollowed && user.following.includes(currentUser);
 
       return Filters.filterInfoForOne(user);
     }
@@ -59,6 +60,7 @@ export class UserService {
 
     return users.map((user: IUser): IUser => {
       user.alreadyFollowed = following.includes(user.uuid);
+      user.followEachOther = user.alreadyFollowed && user.following.includes(currentUser);
 
       return Filters.filterInfoForMany(user);
     });
@@ -87,6 +89,7 @@ export class UserService {
 
     return users.map((user: IUser): IUser => {
       user.alreadyFollowed = following.includes(user.uuid);
+      user.followEachOther = user.alreadyFollowed && user.following.includes(currentUser);
 
       return Filters.filterInfoForMany(user);
     });

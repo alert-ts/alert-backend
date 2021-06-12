@@ -12,6 +12,7 @@ const UserSchema: Schema = new Schema({
   avatar: String,
   posts: [String],
   alreadyFollowed: Boolean,
+  followEachOther: Boolean,
   followers: [String],
   following: [String],
   numbers: {
