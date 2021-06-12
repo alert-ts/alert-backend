@@ -44,6 +44,22 @@ export class CommentController {
     }
   }
 
+  @Get(":postUuid/:uuid")
+  @ApiParam({
+    name: "postUuid",
+    required: true,
+  })
+  @ApiParam({
+    name: "uuid",
+    required: true,
+  })
+  public async findOne(
+    @Param("postUuid") postUuid: string,
+    @Param("uuid") uuid: string,
+  ): Promise<IComment> {
+    return await this.commentService.findOne(postUuid, uuid);
+  }
+
   @Get(":postUuid")
   @ApiParam({
     name: "postUuid",

@@ -20,6 +20,10 @@ export class CommentService {
     throw new Error("Post doesn't exists");
   }
 
+  public async findOne(postUuid: string, uuid: string): Promise<IComment> {
+    return await Comment.findOne({ postUuid, uuid });
+  }
+
   public async findAll(postUuid: string): Promise<Array<IComment>> {
     return await Comment.find({ postUuid });
   }
